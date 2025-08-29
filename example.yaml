@@ -1,0 +1,37 @@
+# Database Backup Configuration example 1 DB->(1 location)
+database:
+  type: postgres
+  host: localhost
+  port: 5432
+  user: myuser
+  password: ${DB_PASSWORD}
+  name: mydb
+
+storage:
+  type: s3
+  bucket: my-db-backups
+  region: us-east-1
+  prefix: prod/mydb
+
+
+# Database Backup Configuration example 2 DB->(multiple locations)
+
+database:
+  type: postgres
+  host: localhost
+  port: 5432
+  user: myuser
+  password: ${DB_PASSWORD}
+  name: mydb
+
+storage:
+  - type: local
+    path: /var/backups/mydb
+  - type: s3
+    bucket: my-db-backups
+    region: us-east-1
+    prefix: prod/mydb
+  - type: gcs
+    bucket: gcs-backups
+    prefix: prod/mydb
+
