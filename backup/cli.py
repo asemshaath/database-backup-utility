@@ -48,5 +48,6 @@ def main():
     if args.command == 'backup':
         print(f"Backing up database {args.db} of type {args.db_type} to {args.type} bucket {args.bucket} at path {args.path}")
         # Here you would add the logic to perform the backup
+        
 if __name__ == '__main__':
     main()
