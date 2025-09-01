@@ -19,26 +19,26 @@ class PostgresBackup(BackupStrategy):
             env["PGPASSWORD"] = password
         
         timestamp = time.strftime("%Y%m%d-%H%M%S")
-        fd, temp_file = tempfile.mkstemp(suffix=".sql", prefix=f"{dbname}_{timestamp}_")
+        fd, the_temp_file = tempfile.mkstemp(suffix=".sql", prefix=f"{dbname}_{timestamp}_")
         os.close(fd)
 
-        print(f"Backup created: {temp_file}")
+        print(f"Backup created: {the_temp_file}")
 
         if host and port and dbname and user:
             cmd = [
                 "pg_dump",
                 "-h", host,
-                "-p", port,
+                "-p", str(port),
                 "-d", dbname,
                 "-U", user,
-                "-f", temp_file
+                "-f", the_temp_file
             ]
 
             process = subprocess.Popen(cmd,env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             _, error = process.communicate()
             if process.returncode != 0:
                 raise Exception(f"pg_dump failed: {error}")
-            return tempfile
+            return the_temp_file
         else:
             raise ValueError("Missing required config parameters")
     def restore(self, config):

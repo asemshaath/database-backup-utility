@@ -7,6 +7,6 @@ STRATEGIES = {
 
 def get_strategy(db_type: str):
     try:
-        return STRATEGIES[db_type]
+        return STRATEGIES[db_type]()
     except KeyError:
         raise ValueError(f"Unsupported DB type: {db_type}")
