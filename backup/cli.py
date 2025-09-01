@@ -1,5 +1,6 @@
 import argparse
-
+from databases import get_strategy
+from storage import get_storage_strategy
 
 def main():
     """
@@ -11,7 +12,7 @@ def main():
                         description='Database Backup Utility',
                         epilog='')
     
-    subparsers = parser.add_subparsers(dest="command")
+    subparsers = parser.add_subparsers(dest="command", required=True)
     # Example usage:
     # db-backup backup --db-type postgres --db mydb
     """"
@@ -40,13 +41,34 @@ def main():
 
     backup_parser.add_argument('--type', help='Cloud provider (e.g., s3, gcs, or local for local filesystem)')
     backup_parser.add_argument('--bucket', help='Cloud storage bucket name')
-    backup_parser.add_argument('--path', help='Path in the cloud storage bucket to store the backup or local path if type is local')
+    backup_parser.add_argument('--path', help='Path in the cloud storage bucket to store the backup or local path if type is local (e.g., /local/path/)')
     backup_parser.add_argument('--region', help='Cloud storage region (if applicable)')
 
     args = parser.parse_args()
     print(args.command)
     if args.command == 'backup':
         print(f"Backing up database {args.db} of type {args.db_type} to {args.type} bucket {args.bucket} at path {args.path}")
+        db_backup = get_strategy(args.db_type)
+        storage_obj = get_storage_strategy(args.type)
+
+        db_config = {
+            "host": args.host,
+            "port": args.port,
+            "dbname": args.db,
+            "user": args.user,
+            "password": args.password
+        }
+
+        db_file_path = db_backup.backup(config=db_config)
+
+        storage_config = {
+            "bucket": args.bucket,
+            "path": args.path,
+            "region": args.region,
+            "type": args.type
+        }
+
+        storage_obj.store(backup_path=db_file_path, config=storage_config)
         # Here you would add the logic to perform the backup
         
 if __name__ == '__main__':
