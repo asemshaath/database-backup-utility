@@ -5,7 +5,7 @@ STRATEGIES = {
     # "mysql": MySQLBackup,
 }
 
-def get_strategy(storage_type: str):
+def get_storage_strategy(storage_type: str):
     try:
         return STRATEGIES[storage_type]
     except KeyError:
