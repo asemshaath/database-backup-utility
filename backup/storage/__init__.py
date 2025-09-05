@@ -1,7 +1,9 @@
 from .localstorage import LocalStorage
+from .gcp import GoogleCloudStorage
 
 STRATEGIES = {
     "local": LocalStorage,
+    "google": GoogleCloudStorage,
     # "mysql": MySQLBackup,
 }
 
