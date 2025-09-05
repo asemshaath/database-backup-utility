@@ -43,6 +43,9 @@ def main():
     backup_parser.add_argument('--bucket', help='Cloud storage bucket name')
     backup_parser.add_argument('--path', help='Path in the cloud storage bucket to store the backup or local path if type is local (e.g., /local/path/)')
     backup_parser.add_argument('--region', help='Cloud storage region (if applicable)')
+    backup_parser.add_argument('--credentials', help='Path to cloud provider credentials file (if applicable)')
+    backup_parser.add_argument('--project', help='Project ID for Google Cloud Storage (optional)')
+
 
     args = parser.parse_args()
     print(args.command)
@@ -65,7 +68,9 @@ def main():
             "bucket": args.bucket,
             "path": args.path,
             "region": args.region,
-            "type": args.type
+            "type": args.type,
+            "credentials": args.credentials,
+            "project": args.project
         }
 
         storage_obj.store(backup_path=db_file_path, config=storage_config)
