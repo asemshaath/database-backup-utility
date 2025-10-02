@@ -33,13 +33,13 @@ def main():
     
     backup_parser.add_argument('--config', help='Path to config file')
     
-    backup_parser.add_argument('-u', '--user', help='Database username') 
-    backup_parser.add_argument('-p', '--password', help='Database password')
-    backup_parser.add_argument('-d', '--db', help='Database name')
+    backup_parser.add_argument('--db-user', help='Database username') 
+    backup_parser.add_argument('--db-pass', help='Database password')
+    backup_parser.add_argument('--db-name', help='Database name')
     backup_parser.add_argument('--db-type', help='Type of the database (e.g., postgres, mysql)')
-    backup_parser.add_argument('--port', type=int, help='Database port number')
+    backup_parser.add_argument('--db-port', type=int, help='Database port number')
 
-    backup_parser.add_argument('--type', help='Cloud provider (e.g., s3, gcs, or local for local filesystem)')
+    backup_parser.add_argument('--storage', help='Cloud provider (e.g., s3, gcs, or local for local filesystem)')
     backup_parser.add_argument('--bucket', help='Cloud storage bucket name')
     backup_parser.add_argument('--path', help='Path in the cloud storage bucket to store the backup or local path if type is local (e.g., /local/path/)')
     backup_parser.add_argument('--region', help='Cloud storage region (if applicable)')
