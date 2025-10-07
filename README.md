@@ -1,11 +1,15 @@
-# 🗄️ Database Backup Utility
+# Database Backup Utility
 
 A work-in-progress **Database Backup Utility** for safe and reliable database backups.  
 Currently, the tool is **early-stage** and requires configuration through command-line arguments.  
 
 ---
+## Overview
 
-## 📌 Current Status
+When I was a software engineer at Hughes, I used to write shell scripts that was heavily backing up data. Therefore, I wanted to build this tool that will be helpful with managing databases between machine and cloud storage. The tool is open source to support other engineers.  
+
+---
+## Current Status
 
 ✅ Implemented:  
 - Backup from **PostgreSQL**  
@@ -19,7 +23,7 @@ Currently, the tool is **early-stage** and requires configuration through comman
 
 ---
 
-## 🚀 Roadmap
+## Roadmap
 
 Here’s the development path I’m working on.  
 Features are being added incrementally — expect breaking changes until a stable release.
@@ -41,7 +45,7 @@ Features are being added incrementally — expect breaking changes until a stabl
 
 ---
 
-## 🛠️ Usage (Current)
+## Usage (Current)
 
 Right now, everything runs from CLI flags. Example:
 
@@ -60,7 +64,7 @@ python backup/cli.py \
 
 ---
 
-## 🤝 Contribution Policy
+## Contribution Policy
 
 At this stage, this project is **not open for public contributions**.  
 I am still actively developing the core features, and the roadmap may change quickly.  
@@ -73,7 +77,7 @@ Once the project matures, I may open it up for broader community contributions.
 
 ---
 
-## 📅 Vision
+## Vision
 
 The end goal is a **config-driven, multi-DB backup utility** with support for:  
 - Multiple databases (Postgres, MySQL, MongoDB, etc.)  
@@ -83,7 +87,7 @@ The end goal is a **config-driven, multi-DB backup utility** with support for:
 
 ---
 
-## 📜 License
+## License
 
 MIT License. See `LICENSE` for details.
 
