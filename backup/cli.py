@@ -69,7 +69,7 @@ def main():
             "bucket": args.bucket,
             "path": args.path,
             "region": args.region,
-            "type": args.type,
+            "type": args.storage,
             "credentials": args.credentials,
             "project": args.project
         }
