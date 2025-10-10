@@ -28,11 +28,11 @@ def main():
     # backup command
     backup_parser = subparsers.add_parser('backup', help='Backup a database')
 
-    backup_parser.add_argument('--host')
 
     
     backup_parser.add_argument('--config', help='Path to config file')
     
+    backup_parser.add_argument('--db-host', help='Database host')
     backup_parser.add_argument('--db-user', help='Database username') 
     backup_parser.add_argument('--db-pass', help='Database password')
     backup_parser.add_argument('--db-name', help='Database name')
@@ -49,17 +49,18 @@ def main():
 
     args = parser.parse_args()
     print(args.command)
+    print(args)
     if args.command == 'backup':
-        print(f"Backing up database {args.db} of type {args.db_type} to {args.type} bucket {args.bucket} at path {args.path}")
+        print(f"Backing up database {args.db_name} of type {args.db_type} to {args.db_type} bucket {args.bucket} at path {args.path}")
         db_backup = get_strategy(args.db_type)
-        storage_obj = get_storage_strategy(args.type)
+        storage_obj = get_storage_strategy(args.storage)
 
         db_config = {
-            "host": args.host,
-            "port": args.port,
-            "dbname": args.db,
-            "user": args.user,
-            "password": args.password
+            "host": args.db_host,
+            "port": args.db_port,
+            "dbname": args.db_name,
+            "user": args.db_user,
+            "password": args.db_pass
         }
 
         db_file_path = db_backup.backup(config=db_config)
