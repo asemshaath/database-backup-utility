@@ -38,6 +38,8 @@ class GoogleCloudStorage:
             print(f"Backup {backup_path} uploaded to {full_gcs_path} in bucket {bucket_name}.")
         except FileNotFoundError as e:
             print(f"File not found error: {e}")
+        except PermissionError as e:
+            print(f"Authentication or permission error: {e}")
         except Forbidden as e:
             print(f"Permission denied when accessing bucket '{config.get('bucket')}': {e}")
         except NotFound as e:
