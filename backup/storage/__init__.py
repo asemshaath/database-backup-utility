@@ -4,7 +4,8 @@ from .gcp import GoogleCloudStorage
 STRATEGIES = {
     "local": LocalStorage,
     "google": GoogleCloudStorage,
-    # "mysql": MySQLBackup,
+    "gcs": GoogleCloudStorage,
+    "gcp": GoogleCloudStorage,
 }
 
 def get_storage_strategy(storage_type: str):
