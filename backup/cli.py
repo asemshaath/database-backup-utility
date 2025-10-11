@@ -1,6 +1,7 @@
 import argparse
 from databases import get_strategy
 from storage import get_storage_strategy
+import os
 
 def main():
     """
@@ -75,6 +76,9 @@ def main():
         }
 
         storage_obj.store(backup_path=db_file_path, config=storage_config)
+
+        os.remove(db_file_path)
+        print(f"Temporary backup file {db_file_path} removed.")
         # Here you would add the logic to perform the backup
         
 if __name__ == '__main__':
