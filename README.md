@@ -11,12 +11,12 @@ When I was a software engineer at Hughes, I used to write shell scripts that was
 ---
 ## Current Status
 
-✅ Implemented:  
+Implemented:  
 - Backup and Restore from **PostgreSQL**  
 - Store backups in **Google Cloud Storage (GCS)** and **machine local storage**  
 - CLI-based config (manual flags, no config file yet)  
 
-⚠️ Limitations:  
+Limitations:  
 - No YAML config support yet (all options must be passed through CLI).  
 - Limited to PostgreSQL only.  
 - No encryption, or scheduling implemented yet.  
@@ -95,4 +95,4 @@ MIT License. See `LICENSE` for details.
 
 ---
 
-⚡ *This project is still under active development. Expect rough edges, but contributions/feedback are welcome!*  
+*This project is still under active development. Expect rough edges, but contributions/feedback are welcome!*  
