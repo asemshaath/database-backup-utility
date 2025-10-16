@@ -2,6 +2,7 @@ from .base import StorageStrategy
 import os
 import subprocess
 import sys
+import tempfile
 
 class LocalStorage(StorageStrategy):
     def store(self, backup_path, config):
@@ -17,5 +18,19 @@ class LocalStorage(StorageStrategy):
             print(f"Failed to store backup: {e}")
             sys.exit(1)
 
-    def retrieve(self, backup_file, config):
-        pass
+    def retrieve(self, backup_name, config):
+        directory = config.get('path', None)
+        backup_path = os.path.join(directory, os.path.basename(backup_name))
+
+        if os.path.exists(backup_path):
+            print(f"'{backup_name}' exists.")
+            temp_dir = tempfile.mkdtemp()
+
+            subprocess.run(['cp', backup_path, temp_dir], check=True)
+            temp_backup_path = os.path.join(temp_dir, os.path.basename(backup_name))
+            print(f"Backup copied to temporary location: {temp_backup_path}")
+            return temp_backup_path
+        else:
+            raise FileNotFoundError(f"Backup file '{backup_name}' does not exist.")
+
+        
