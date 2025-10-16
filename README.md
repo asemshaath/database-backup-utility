@@ -12,14 +12,14 @@ When I was a software engineer at Hughes, I used to write shell scripts that was
 ## Current Status
 
 ✅ Implemented:  
-- Backup from **PostgreSQL**  
-- Store backups in **Google Cloud Storage (GCS)**  
+- Backup and Restore from **PostgreSQL**  
+- Store backups in **Google Cloud Storage (GCS)** and **machine local storage**  
 - CLI-based config (manual flags, no config file yet)  
 
 ⚠️ Limitations:  
 - No YAML config support yet (all options must be passed through CLI).  
 - Limited to PostgreSQL only.  
-- No encryption, scheduling, or restore commands implemented yet.  
+- No encryption, or scheduling implemented yet.  
 
 ---
 
@@ -37,7 +37,7 @@ Features are being added incrementally — expect breaking changes until a stabl
 - [ ] Add support for MongoDB  
 - [ ] Add support for SQLite  
 - [ ] Add YAML config file support (to avoid long CLI commands)  
-- [ ] Implement restore functionality  
+- [x] Implement restore functionality (restore functionality availible with postgres)
 - [ ] Add compression & checksums  
 - [ ] Add encryption (GPG or AES)  
 - [ ] Add scheduling (cron / built-in job runner)  
@@ -48,6 +48,8 @@ Features are being added incrementally — expect breaking changes until a stabl
 ## Usage (Current)
 
 Right now, everything runs from CLI flags. Example:
+
+> Please note: this is subject to change as this package is not deployed to PyPI
 
 ```bash
 python backup/cli.py \
