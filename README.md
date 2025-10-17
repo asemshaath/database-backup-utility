@@ -28,8 +28,8 @@ Limitations:
 Here’s the development path I’m working on.  
 Features are being added incrementally — expect breaking changes until a stable release.
 
-- [x] Backup from PostgreSQL → GCS (MVP complete 🎉)  
-- [x] Add support for local storage (MVP complete 🎉)  
+- [x] Backup from PostgreSQL → GCS (MVP complete)  
+- [x] Add support for local storage (MVP complete)  
 - [ ] Launch to PyPI  
 - [ ] Add support for AWS S3  
 - [ ] Add support for Azure Blob Storage  
@@ -52,16 +52,17 @@ Right now, everything runs from CLI flags. Example:
 > Please note: this is subject to change as this package is not deployed to PyPI
 
 ```bash
-python backup/cli.py \
-  --db-type postgres \
+python core/cli.py backup\
+  --db-type postgres \ # this would be to specfiy the db type (e.g. postgres or mysql)
   --db-host localhost \
   --db-port 5432 \
   --db-user admin \
-  --db-pass secret \
-  --db-name mydb \
+  --db-pass bigsecret \ # when password not provideed user will be prompted
+  --db-name collegegrades \
   --storage gcs \
   --bucket my-db-backups \
-  --project my-gcp-project
+  --path dbbu\ # the path of the directory (not file name) 
+  --project my-gcp-project # project name would mostly be optional
 ```
 
 ---
