@@ -28,7 +28,7 @@ Limitations:
 Here’s the development path I’m working on.  
 Features are being added incrementally — expect breaking changes until a stable release.
 
-- [x] Backup from PostgreSQL → GCS (MVP complete)  
+- [x] Backup from PostgreSQL to GCS (MVP complete)  
 - [x] Add support for local storage (MVP complete)  
 - [ ] Launch to PyPI  
 - [ ] Add support for AWS S3  
@@ -42,6 +42,7 @@ Features are being added incrementally — expect breaking changes until a stabl
 - [ ] Add encryption (GPG or AES)  
 - [ ] Add scheduling (cron / built-in job runner)  
 - [ ] Add monitoring & notifications (Slack/Email)  
+- [ ] Test the code for PostgreSQL to GCS
 
 ---
 
