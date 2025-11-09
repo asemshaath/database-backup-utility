@@ -3,6 +3,10 @@ from databases import get_strategy
 from storage import get_storage_strategy
 import os
 import sys
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
+logger = logging.getLogger('afterchive')
 
 def main():
     """
@@ -59,12 +63,12 @@ def main():
     if args.command in ['backup', 'restore']:
         # Quick check for critical fields
         if not all([args.db_type, args.db_host, args.db_name, args.storage]):
-            print("Error: Missing required arguments (db-type, db-host, db-name, storage)")
+            logger.info("Error: Missing required arguments (db-type, db-host, db-name, storage)")
             parser.print_help()
             sys.exit(1)
 
     if args.command == 'backup':
-        print(f"Backing up database {args.db_name} of type {args.db_type} to {args.storage} at path {args.path}")
+        logger.info(f"Backing up database {args.db_name} of type {args.db_type} to {args.storage} at path {args.path}")
         db = get_strategy(args.db_type)
         storage = get_storage_strategy(args.storage)
 
@@ -90,7 +94,7 @@ def main():
         storage.store(backup_path=db_file_path, config=storage_config)
 
         os.remove(db_file_path)
-        print(f"Temporary backup file {db_file_path} removed.")
+        logger.info(f"Temporary backup file {db_file_path} removed.")
     elif args.command == 'restore':
         # Here you would add the logic to perform the restore
         db = get_strategy(args.db_type)
@@ -120,7 +124,7 @@ def main():
 
 
         os.remove(db_backup_path)
-        print(f"Temporary backup file {db_backup_path} removed.")
+        logger.info(f"Temporary backup file {db_backup_path} removed.")
 
     else:
         parser.print_help()

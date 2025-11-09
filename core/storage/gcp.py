@@ -3,6 +3,10 @@ import os
 from google.api_core.exceptions import GoogleAPIError, NotFound, Forbidden
 import traceback
 import tempfile
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
+logger = logging.getLogger('afterchive')
 
 class GoogleCloudStorage:
 
@@ -31,23 +35,23 @@ class GoogleCloudStorage:
             blob = bucket.blob(full_gcs_path)
 
             blob.upload_from_filename(backup_path)
-            print(f"Backup {backup_path} uploaded to {full_gcs_path} in bucket {bucket_name}.")
+            logger.info(f"Backup {backup_path} uploaded to {full_gcs_path} in bucket {bucket_name}.")
         except FileNotFoundError as e:
-            print(f"File not found error: {e}")
+            logger.info(f"File not found error: {e}")
         except PermissionError as e:
-            print(f"Authentication or permission error: {e}")
+            logger.info(f"Authentication or permission error: {e}")
         except Forbidden as e:
-            print(f"Permission denied when accessing bucket '{config.get('bucket')}': {e}")
+            logger.info(f"Permission denied when accessing bucket '{config.get('bucket')}': {e}")
         except NotFound as e:
-            print(f"Bucket or path not found: {e}")
+            logger.info(f"Bucket or path not found: {e}")
         except ValueError as e:
-            print(f"Configuration error: {e}")
+            logger.info(f"Configuration error: {e}")
         except ConnectionError as e:
-            print(f"Connection error: {e}")
+            logger.info(f"Connection error: {e}")
         except GoogleAPIError as e:
-            print(f"Google API error: {e.message}")
+            logger.info(f"Google API error: {e.message}")
         except Exception as e:
-            print(f"Unexpected error while storing backup: {str(e)}")
+            logger.info(f"Unexpected error while storing backup: {str(e)}")
             traceback.print_exc()
             raise e
     
@@ -73,24 +77,24 @@ class GoogleCloudStorage:
             temp_dir = tempfile.mkdtemp()
             destination_file_name = os.path.join(temp_dir, backup_name)
             blob.download_to_filename(destination_file_name)
-            print(f"Backup '{backup_name}' downloaded to temporary location: {destination_file_name}")
+            logger.info(f"Backup '{backup_name}' downloaded to temporary location: {destination_file_name}")
             return destination_file_name
         except FileNotFoundError as e:
-            print(f"File not found error: {e}")
+            logger.info(f"File not found error: {e}")
         except PermissionError as e:
-            print(f"Authentication or permission error: {e}")
+            logger.info(f"Authentication or permission error: {e}")
         except Forbidden as e:
-            print(f"Permission denied when accessing bucket '{config.get('bucket')}': {e}")
+            logger.info(f"Permission denied when accessing bucket '{config.get('bucket')}': {e}")
         except NotFound as e:
-            print(f"Bucket or path not found: {e}")
+            logger.info(f"Bucket or path not found: {e}")
         except ValueError as e:
-            print(f"Configuration error: {e}")
+            logger.info(f"Configuration error: {e}")
         except ConnectionError as e:
-            print(f"Connection error: {e}")
+            logger.info(f"Connection error: {e}")
         except GoogleAPIError as e:
-            print(f"Google API error: {e.message}")
+            logger.info(f"Google API error: {e.message}")
         except Exception as e:
-            print(f"Unexpected error while storing backup: {str(e)}")
+            logger.info(f"Unexpected error while storing backup: {str(e)}")
             traceback.print_exc()
             raise e
 

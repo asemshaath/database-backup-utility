@@ -6,6 +6,10 @@ import os
 import tempfile
 import time
 import getpass
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
+logger = logging.getLogger('afterchive')
 
 class PostgresBackup(BackupStrategy):
     def backup(self, config):
@@ -28,7 +32,7 @@ class PostgresBackup(BackupStrategy):
         fd, the_temp_file = tempfile.mkstemp(suffix=".sql", prefix=f"{dbname}_{timestamp}_")
         os.close(fd)
 
-        print(f"Backup created: {the_temp_file}")
+        logger.info(f"Backup created: {the_temp_file}")
 
         if host and port and dbname and user:
             cmd = [
@@ -68,7 +72,7 @@ class PostgresBackup(BackupStrategy):
         
         if host and port and dbname and user:
             if not self.database_exists(dbname, user, password, host, port):
-                print("The given database does not exist. Creating it...")
+                logger.info("The given database does not exist. Creating it...")
                 self.create_database(dbname, user, password, host, port)
             
             cmd = [
@@ -83,7 +87,7 @@ class PostgresBackup(BackupStrategy):
             _, error = process.communicate()
             if process.returncode != 0:
                 raise Exception(f"psql restore failed: {error}")
-            print(f"Database {dbname} restored successfully from {backup_file}")
+            logger.info(f"Database {dbname} restored successfully from {backup_file}")
         else:
             raise ValueError("Missing required config parameters")
 
@@ -109,7 +113,7 @@ class PostgresBackup(BackupStrategy):
             conn.close()
             return exists
         except Exception as e:
-            print(f"Error connecting to PostgreSQL: {e}")
+            logger.info(f"Error connecting to PostgreSQL: {e}")
             return False
 
     def create_database(self, db_name, user, password, host, port):
@@ -132,9 +136,9 @@ class PostgresBackup(BackupStrategy):
 
             cursor.close()
             conn.close()
-            print(f"Database {db_name} created successfully.")
+            logger.info(f"Database {db_name} created successfully.")
         except Exception as e:
-            print(f"Error creating database {db_name}: {e}")
+            logger.info(f"Error creating database {db_name}: {e}")
     
     def get_db_connection(self, dbname, user, password, host, port):
         try:
@@ -149,5 +153,5 @@ class PostgresBackup(BackupStrategy):
             
             return conn
         except Exception as e:
-            print(f"Error connecting to PostgreSQL: {e}")
+            logger.info(f"Error connecting to PostgreSQL: {e}")
             return None 
