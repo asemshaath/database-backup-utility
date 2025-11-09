@@ -54,9 +54,17 @@ def main():
 
     # Support environment variables for sensitive data
     db_password = args.db_pass or os.getenv('AFTERCHIVE_DB_PASSWORD')
+    args.db_pass = db_password
+
+    if args.command in ['backup', 'restore']:
+        # Quick check for critical fields
+        if not all([args.db_type, args.db_host, args.db_name, args.storage]):
+            print("Error: Missing required arguments (db-type, db-host, db-name, storage)")
+            parser.print_help()
+            sys.exit(1)
 
     if args.command == 'backup':
-        print(f"Backing up database {args.db_name} of type {args.db_type} to {args.db_type} bucket {args.bucket} at path {args.path}")
+        print(f"Backing up database {args.db_name} of type {args.db_type} to {args.storage} at path {args.path}")
         db = get_strategy(args.db_type)
         storage = get_storage_strategy(args.storage)
 
