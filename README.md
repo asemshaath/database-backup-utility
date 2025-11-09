@@ -46,6 +46,17 @@ Features are being added incrementally — expect breaking changes until a stabl
 
 ---
 
+## Test Requirments
+
+The tool needs to be tested in diffrent environments
+
+- [ ] Test the code for PostgreSQL to GCS in local enviroment
+- [ ] Test the running status in multiple linux enviroments
+
+
+
+---
+
 ## Usage (Current)
 
 Right now, everything runs from CLI flags. Example:
