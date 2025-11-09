@@ -37,7 +37,7 @@ Features are being added incrementally — expect breaking changes until a stabl
 - [ ] Add support for MongoDB  
 - [ ] Add support for SQLite  
 - [ ] Add YAML config file support (to avoid long CLI commands)  
-- [x] Implement restore functionality (restore functionality availible with postgres)
+- [x] Implement restore functionality (restore functionality available with postgres)
 - [ ] Add compression & checksums  
 - [ ] Add encryption (GPG or AES)  
 - [ ] Add scheduling (cron / built-in job runner)  
