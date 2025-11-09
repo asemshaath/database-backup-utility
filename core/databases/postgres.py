@@ -13,44 +13,70 @@ logger = logging.getLogger('afterchive')
 
 class PostgresBackup(BackupStrategy):
     def backup(self, config):
-        # run pg_dump with right flags
-        host = config.get("host", None)
-        port = config.get("port", None)
-        dbname = config.get("dbname", None)
-        user = config.get("user", None)
-        password = config.get("password", None)
+        host = config.get("host")
+        port = config.get("port")
+        dbname = config.get("dbname")
+        user = config.get("user")
+        password = config.get("password")
+
+        # Validate required fields
+        if not all([host, port, dbname, user]):
+            raise ValueError("Missing required database configuration (host, port, dbname, user)")
 
         # Prompt for password if not provided
         if not password:
             password = getpass.getpass(f"Enter password for PostgreSQL user '{user}': ")
 
+        # TEST CONNECTION FIRST (before creating any files)
+        logger.debug("Testing database connection...")
+        if not self.database_exists(dbname, user, password, host, port):
+            raise ValueError(f"Cannot connect to database '{dbname}' - check credentials and database name")
+        
+        logger.debug("Connection successful")
+
+        # NOW create temp file and backup
         env = os.environ.copy()
-        if password:
-            env["PGPASSWORD"] = password
+        env["PGPASSWORD"] = password
         
         timestamp = time.strftime("%Y%m%d-%H%M%S")
         fd, the_temp_file = tempfile.mkstemp(suffix=".sql", prefix=f"{dbname}_{timestamp}_")
         os.close(fd)
 
-        logger.info(f"Backup created: {the_temp_file}")
+        logger.debug(f"Backup file: {the_temp_file}")
 
-        if host and port and dbname and user:
-            cmd = [
-                "pg_dump",
-                "-h", host,
-                "-p", str(port),
-                "-d", dbname,
-                "-U", user,
-                "-f", the_temp_file
-            ]
+        cmd = [
+            "pg_dump",
+            "-h", host,
+            "-p", str(port),
+            "-d", dbname,
+            "-U", user,
+            "-f", the_temp_file
+        ]
 
-            process = subprocess.Popen(cmd,env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        try:
+            process = subprocess.Popen(
+                cmd, 
+                env=env, 
+                stdout=subprocess.PIPE, 
+                stderr=subprocess.PIPE, 
+                text=True
+            )
             _, error = process.communicate()
+            
             if process.returncode != 0:
-                raise Exception(f"pg_dump failed: {error}")
+                # Clean up on failure
+                self._cleanup_temp_file(the_temp_file)                
+                # This shouldn't happen if connection test passed, but handle it
+                raise ValueError(f"pg_dump failed: {error.strip()}")
+            
+            logger.info(f"Backup created: {os.path.basename(the_temp_file)}")
             return the_temp_file
-        else:
-            raise ValueError("Missing required config parameters")
+            
+        except Exception as e:
+            # Clean up temp file on any error
+            if os.path.exists(the_temp_file):
+                os.remove(the_temp_file)
+            raise
     
     def restore(self, config):
         backup_file = config.get("backup_file", None)
@@ -113,7 +139,7 @@ class PostgresBackup(BackupStrategy):
             conn.close()
             return exists
         except Exception as e:
-            logger.info(f"Error connecting to PostgreSQL: {e}")
+            logger.error(f"Error connecting to PostgreSQL: {e}")
             return False
 
     def create_database(self, db_name, user, password, host, port):
@@ -152,6 +178,30 @@ class PostgresBackup(BackupStrategy):
             )            
             
             return conn
+        except psycopg2.OperationalError as e:
+            error_msg = str(e)
+            
+            # Parse specific errors
+            if "password authentication failed" in error_msg:
+                raise ValueError(f"Authentication failed - incorrect password for user '{user}'")
+            elif "could not connect to server" in error_msg:
+                raise ValueError(f"Could not connect to PostgreSQL at {host}:{port}")
+            elif f'database "{dbname}" does not exist' in error_msg:
+                raise ValueError(f"Database '{dbname}' does not exist")
+            elif "role" in error_msg and "does not exist" in error_msg:
+                raise ValueError(f"User '{user}' does not exist")
+            else:
+                raise ValueError(f"Connection failed: {error_msg}")
+
         except Exception as e:
             logger.info(f"Error connecting to PostgreSQL: {e}")
             return None 
+    
+    def _cleanup_temp_file(self, filepath):
+        """Remove temporary file if it exists"""
+        if filepath and os.path.exists(filepath):
+            try:
+                os.remove(filepath)
+                logger.debug(f"Cleaned up temp file: {filepath}")
+            except Exception as e:
+                logger.warning(f"Failed to clean up temp file {filepath}: {e}")
