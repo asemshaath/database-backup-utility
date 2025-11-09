@@ -98,3 +98,4 @@ MIT License. See `LICENSE` for details.
 ---
 
 *This project is still under active development. Expect rough edges, but contributions/feedback are welcome!*  
+*This project is inspired by https://roadmap.sh/projects/database-backup-utility*
