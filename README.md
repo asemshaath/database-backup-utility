@@ -100,6 +100,10 @@ The end goal is a **config-driven, multi-DB backup utility** with support for:
 - Secure encryption & easy restore  
 - Simple automation/scheduling  
 
+The end goal will have 3 main functionalities:
+- 1 db &harr; 1 storage location
+- 1 db &harr; multiple storage locations
+- multiple databases &harr; multiple storage locations
 ---
 
 ## License
