@@ -69,32 +69,45 @@ def main():
 
     if args.command == 'backup':
         logger.info(f"Backing up database {args.db_name} of type {args.db_type} to {args.storage} at path {args.path}")
-        db = get_strategy(args.db_type)
-        storage = get_storage_strategy(args.storage)
+        
+        try:
+            db = get_strategy(args.db_type)
+            storage = get_storage_strategy(args.storage)
 
-        db_config = {
-            "host": args.db_host,
-            "port": args.db_port,
-            "dbname": args.db_name,
-            "user": args.db_user,
-            "password": args.db_pass
-        }
+            db_config = {
+                "host": args.db_host,
+                "port": args.db_port,
+                "dbname": args.db_name,
+                "user": args.db_user,
+                "password": args.db_pass
+            }
 
-        db_file_path = db.backup(config=db_config)
+            db_file_path = db.backup(config=db_config)
 
-        storage_config = {
-            "bucket": args.bucket,
-            "path": args.path,
-            "region": args.region,
-            "type": args.storage,
-            "credentials": args.credentials,
-            "project": args.project
-        }
+            storage_config = {
+                "bucket": args.bucket,
+                "path": args.path,
+                "region": args.region,
+                "type": args.storage,
+                "credentials": args.credentials,
+                "project": args.project
+            }
 
-        storage.store(backup_path=db_file_path, config=storage_config)
+            storage.store(backup_path=db_file_path, config=storage_config)
 
-        os.remove(db_file_path)
-        logger.info(f"Temporary backup file {db_file_path} removed.")
+            os.remove(db_file_path)
+            logger.info(f"Temporary backup file {db_file_path} removed.")
+            logger.info("Backup process completed successfully.")
+        except ValueError as e:
+            # User-facing errors (wrong password, missing db, etc)
+            logger.error(str(e))
+            sys.exit(1)
+        except Exception as e:
+            # Unexpected errors - show some detail but not full traceback
+            logger.error(f"Backup failed: {str(e)}")
+            logger.debug("Full error:", exc_info=True)  # Only with --verbose
+            sys.exit(1)
+
     elif args.command == 'restore':
         # Here you would add the logic to perform the restore
         db = get_strategy(args.db_type)
