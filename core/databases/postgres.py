@@ -1,5 +1,6 @@
 from .base import BackupStrategy
 import psycopg2
+from psycopg2 import sql
 import subprocess
 import os
 import tempfile
@@ -100,7 +101,8 @@ class PostgresBackup(BackupStrategy):
             cursor = conn.cursor()
 
             # Query pg_database to check for the existence of the specified database
-            cursor.execute(f"SELECT 1 FROM pg_database WHERE datname = '{db_name}'")
+            cursor.execute("SELECT 1 FROM pg_database WHERE datname = %s", (db_name,))
+
             exists = cursor.fetchone() is not None
 
             cursor.close()
@@ -124,7 +126,9 @@ class PostgresBackup(BackupStrategy):
             cursor = conn.cursor()
 
             # Create the new database
-            cursor.execute(f"CREATE DATABASE {db_name}")
+            cursor.execute(
+                sql.SQL("CREATE DATABASE {}").format(sql.Identifier(db_name))
+            )
 
             cursor.close()
             conn.close()
