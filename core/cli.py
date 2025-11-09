@@ -7,17 +7,9 @@ import sys
 def main():
     """
     This is the main function that contains the primary logic of the script.
-    """
-    # Call other functions or perform operations here
-    parser = argparse.ArgumentParser(
-                        prog='db-backup',
-                        description='Database Backup Utility',
-                        epilog='')
-    
-    subparsers = parser.add_subparsers(dest="command", required=True)
+
     # Example usage:
     # db-backup backup --db-type postgres --db mydb
-    """"
         db-backup backup \
         --db-type postgres \
         --host localhost --db mydb --user admin \
@@ -27,31 +19,41 @@ def main():
         --region us-east-1
     """
 
-    db_parser = subparsers.add_parser('backup', help='Backup a database')
-    db_parser = subparsers.add_parser('restore', help='Restore a database')
-
-
+    # Call other functions or perform operations here
+    parser = argparse.ArgumentParser(
+                    prog='afterchive',
+                    description='Database Backup Utility',
+                    epilog='')
     
-    db_parser.add_argument('--config', help='Path to config file')
+    # Create parent parser with common arguments
+    parent_parser = argparse.ArgumentParser(add_help=False)
+    parent_parser.add_argument('--config', help='Path to config file')
+    parent_parser.add_argument('--db-host', help='Database host')
+    parent_parser.add_argument('--db-user', help='Database username') 
+    parent_parser.add_argument('--db-pass', help='Database password (or set DB_PASSWORD env var)')
+    parent_parser.add_argument('--db-name', help='Database name')
+    parent_parser.add_argument('--db-type', help='Type of the database (e.g., postgres, mysql)')
+    parent_parser.add_argument('--db-port', type=int, help='Database port number')
+    parent_parser.add_argument('--storage', help='Cloud provider (e.g., s3, gcs, or local for local filesystem)')
+    parent_parser.add_argument('--bucket', help='Cloud storage bucket name')
+    parent_parser.add_argument('--path', help='Path in the cloud storage bucket')
+    parent_parser.add_argument('--region', help='Cloud storage region (if applicable)')
+    parent_parser.add_argument('--credentials', help='Path to cloud provider credentials file')
+    parent_parser.add_argument('--project', help='Project ID for Google Cloud Storage (optional)')
     
-    db_parser.add_argument('--db-host', help='Database host')
-    db_parser.add_argument('--db-user', help='Database username') 
-    db_parser.add_argument('--db-pass', help='Database password')
-    db_parser.add_argument('--db-name', help='Database name')
-    db_parser.add_argument('--db-type', help='Type of the database (e.g., postgres, mysql)')
-    db_parser.add_argument('--db-port', type=int, help='Database port number')
-
-    db_parser.add_argument('--storage', help='Cloud provider (e.g., s3, gcs, or local for local filesystem)')
-    db_parser.add_argument('--bucket', help='Cloud storage bucket name')
-    db_parser.add_argument('--path', help='Path in the cloud storage bucket to store the backup or local path if type is local (e.g., /local/path/)')
-    db_parser.add_argument('--region', help='Cloud storage region (if applicable)')
-    db_parser.add_argument('--credentials', help='Path to cloud provider credentials file (if applicable)')
-    db_parser.add_argument('--project', help='Project ID for Google Cloud Storage (optional)')
-
-    db_parser.add_argument('--backup-file', help='Path to the backup file for restoration (if applicable)')
+    subparsers = parser.add_subparsers(dest="command", required=True)
+    
+    # Create subparsers that inherit from parent
+    backup_parser = subparsers.add_parser('backup', parents=[parent_parser], help='Backup a database')
+    restore_parser = subparsers.add_parser('restore', parents=[parent_parser], help='Restore a database')
+    
+    # Add restore-specific argument
+    restore_parser.add_argument('--backup-file', help='Path to the backup file for restoration')
 
     args = parser.parse_args()
-    print(args.command)
+
+    # Support environment variables for sensitive data
+    db_password = args.db_pass or os.getenv('AFTERCHIVE_DB_PASSWORD')
 
     if args.command == 'backup':
         print(f"Backing up database {args.db_name} of type {args.db_type} to {args.db_type} bucket {args.bucket} at path {args.path}")
