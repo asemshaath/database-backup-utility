@@ -8,6 +8,7 @@ Currently, the tool is **early-stage** and requires configuration through comman
 
 When I was a software engineer at Hughes, I used to write shell scripts that was heavily backing up data. Therefore, I wanted to build this tool that will be helpful with managing databases between machine and cloud storage. The tool is open source to support other engineers.  
 
+![alt text](.media/image.png)
 ---
 ## Current Status
 
