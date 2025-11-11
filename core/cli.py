@@ -3,7 +3,11 @@ from databases import get_strategy
 from storage import get_storage_strategy
 import os
 import sys
+import yaml
 import logging
+from commands import backup_command, restore_command
+from configs import parse_yaml_config
+from utils import get_cleaned_conf_cli
 
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 logger = logging.getLogger('afterchive')
@@ -13,7 +17,7 @@ def main():
     This is the main function that contains the primary logic of the script.
 
     # Example usage:
-    # db-backup backup --db-type postgres --db mydb
+    # afterchive backup --db-type postgres --db mydb
         db-backup backup \
         --db-type postgres \
         --host localhost --db mydb --user admin \
@@ -56,88 +60,26 @@ def main():
 
     args = parser.parse_args()
 
-    # Support environment variables for sensitive data
-    db_password = args.db_pass or os.getenv('AFTERCHIVE_DB_PASSWORD')
-    args.db_pass = db_password
+    if args.config:
+        conf = parse_yaml_config(args.config, args.command)
+        print(conf)
+    else:
+        conf = get_cleaned_conf_cli(args)
+        db_password = args.db_pass or os.getenv('AFTERCHIVE_DB_PASSWORD')
+        args.db_pass = db_password
 
-    if args.command in ['backup', 'restore']:
-        # Quick check for critical fields
-        if not all([args.db_type, args.db_host, args.db_name, args.storage]):
-            logger.info("Error: Missing required arguments (db-type, db-host, db-name, storage)")
-            parser.print_help()
-            sys.exit(1)
+        # if args.command in ['backup', 'restore']:
+        #     # Quick check for critical fields
+        #     if not all([args.db_type, args.db_host, args.db_name, args.storage]):
+        #         logger.info("Error: Missing required arguments (db-type, db-host, db-name, storage)")
+        #         parser.print_help()
+        #         sys.exit(1)
 
     if args.command == 'backup':
-        logger.info(f"Backing up database {args.db_name} of type {args.db_type} to {args.storage} at path {args.path}")
+        backup_command(conf['databases'][0], conf['storage'][0])
         
-        try:
-            db = get_strategy(args.db_type)
-            storage = get_storage_strategy(args.storage)
-
-            db_config = {
-                "host": args.db_host,
-                "port": args.db_port,
-                "dbname": args.db_name,
-                "user": args.db_user,
-                "password": args.db_pass
-            }
-
-            db_file_path = db.backup(config=db_config)
-
-            storage_config = {
-                "bucket": args.bucket,
-                "path": args.path,
-                "region": args.region,
-                "type": args.storage,
-                "credentials": args.credentials,
-                "project": args.project
-            }
-
-            storage.store(backup_path=db_file_path, config=storage_config)
-
-            os.remove(db_file_path)
-            logger.info(f"Temporary backup file {db_file_path} removed.")
-            logger.info("Backup process completed successfully.")
-        except ValueError as e:
-            # User-facing errors (wrong password, missing db, etc)
-            logger.error(str(e))
-            sys.exit(1)
-        except Exception as e:
-            # Unexpected errors - show some detail but not full traceback
-            logger.error(f"Backup failed: {str(e)}")
-            logger.debug("Full error:", exc_info=True)  # Only with --verbose
-            sys.exit(1)
-
     elif args.command == 'restore':
-        # Here you would add the logic to perform the restore
-        db = get_strategy(args.db_type)
-        storage = get_storage_strategy(args.storage)
-        
-        storage_config = {
-            "bucket": args.bucket,
-            "path": args.path,
-            "region": args.region,
-            "type": args.storage,
-            "credentials": args.credentials,
-            "project": args.project
-        }
-
-        db_backup_path = storage.retrieve(backup_name= args.backup_file, config=storage_config)
-
-        db_config = {
-            "host": args.db_host,
-            "port": args.db_port,
-            "dbname": args.db_name,
-            "user": args.db_user,
-            "password": args.db_pass
-        }
-
-        db.restore(config={**db_config, "backup_file": db_backup_path})
-
-
-
-        os.remove(db_backup_path)
-        logger.info(f"Temporary backup file {db_backup_path} removed.")
+        restore_command(conf['databases'][0], conf['storage'][0], args.backup_file)
 
     else:
         parser.print_help()
