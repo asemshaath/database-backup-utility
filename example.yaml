@@ -4,15 +4,16 @@ database:
   host: localhost
   port: 5432
   user: myuser
-  password: ${DB_PASSWORD}
+  password: ${DB_PASSWORD} # optional
   name: mydb
 
 storage:
-  type: s3
+  type: google
   bucket: my-db-backups
   region: us-east-1
-  prefix: prod/mydb
-
+  path: prod/mydb
+  credentials: iam-service-account.json
+  project: the-next-uber
 
 # Database Backup Configuration example 2 DB->(multiple locations)
 
@@ -35,3 +36,76 @@ storage:
     bucket: gcs-backups
     prefix: prod/mydb
 
+
+
+# Afterchive Configuration v0.1.0
+# For full documentation: https://github.com/asemshaath/afterchive
+
+# ============================================================================
+# IMPLEMENTED IN v0.1.0
+# ============================================================================
+
+backup:
+  database:
+    type: postgres              # postgres, mysql (v0.2.0+)
+    host: localhost
+    port: 5432
+    user: asem
+    name: randombizdb
+    password: ${DB_PASSWORD}    # Use environment variables
+
+  storage:
+    type: gcs                   # gcs, local, s3 (v0.2.0+), azure (v0.3.0+)
+    bucket: prod-backups
+    path: afterchive/backups
+    project: my-gcp-project     # For GCS
+    credentials: /path/to/key.json  # Optional
+
+restore:
+  database:
+    type: postgres
+    host: localhost
+    port: 5432
+    user: asem
+    name: randombizdb
+    password: ${DB_PASSWORD}
+
+  storage:
+    type: gcs
+    bucket: prod-backups
+    path: afterchive/backups
+    project: my-gcp-project
+
+# ============================================================================
+# COMING IN FUTURE VERSIONS (not yet implemented)
+# ============================================================================
+
+# # v0.2.0 - Compression & Retention
+# backup:
+#   options:
+#     compress: true
+#     compression_level: 6
+#   retention:
+#     days: 30
+#     max_backups: 10
+
+# # v0.3.0 - Scheduling
+# schedule:
+#   enabled: true
+#   cron: "0 2 * * *"
+#   timezone: UTC
+
+# # v0.4.0 - Notifications
+# notifications:
+#   on_success: true
+#   on_failure: true
+#   slack_webhook: https://hooks.slack.com/...
+#   email: admin@example.com
+
+# # v1.0.0 - Multiple Jobs
+# jobs:
+#   - name: daily-backup
+#     schedule: "0 2 * * *"
+#     backup:
+#       database: {...}
+#       storage: {...}
