@@ -9,41 +9,34 @@ Currently, the tool is **early-stage** and requires configuration through comman
 When I was a software engineer at Hughes, I used to write shell scripts that was heavily backing up data. Therefore, I wanted to build this tool that will be helpful with managing databases between machine and cloud storage. The tool is open source to support other engineers.  
 
 ![alt text](.media/image.png)
----
-## Current Status
-
-Implemented:  
-- Backup and Restore from **PostgreSQL**  
-- Store backups in **Google Cloud Storage (GCS)** and **machine local storage**  
-- CLI-based config (manual flags, no config file yet)  
-
-Limitations:  
-- No YAML config support yet (all options must be passed through CLI).  
-- Limited to PostgreSQL only.  
-- No encryption, or scheduling implemented yet.  
 
 ---
 
 ## Roadmap
 
-Here’s the development path I’m working on.  
-Features are being added incrementally — expect breaking changes until a stable release.
+### v0.1.0 (Current) ✅
+- [x] PostgreSQL backup/restore
+- [x] GCS and Local storage
+- [x] YAML configuration
+- [x] Environment variable support
 
-- [x] Backup from PostgreSQL to GCS (MVP complete)  
-- [x] Add support for local storage (MVP complete)  
+### v0.2.0 (Planned)
 - [ ] Launch to PyPI  
-- [ ] Add support for AWS S3  
-- [ ] Add support for Azure Blob Storage  
-- [ ] Add support for MySQL  
-- [ ] Add support for MongoDB  
-- [ ] Add support for SQLite  
-- [ ] Add YAML config file support (to avoid long CLI commands)  
-- [x] Implement restore functionality (restore functionality available with postgres)
-- [ ] Add compression & checksums  
-- [ ] Add encryption (GPG or AES)  
-- [ ] Add scheduling (cron / built-in job runner)  
-- [ ] Add monitoring & notifications (Slack/Email)  
-- [ ] Test the code for PostgreSQL to GCS
+- [ ] MySQL support
+- [ ] AWS S3 storage
+- [ ] Compression & checksums
+- [ ] Retention policies
+
+### v0.3.0 (Planned)
+- [ ] MongoDB support
+- [ ] Azure Blob storage
+- [ ] Scheduling (cron / built-in job runner)
+
+### v1.0.0 (Planned)
+- [ ] Multiple backup jobs
+- [ ] Notifications (Slack, Email)
+- [ ] Encryption (GPG or AES)
+- [ ] Advanced orchestration
 
 ---
 
@@ -95,7 +88,7 @@ Once the project matures, I may open it up for broader community contributions.
 
 ## Vision
 
-The end goal is a **config-driven, multi-DB backup utility** with support for:  
+The end goal is a **config-driven, multi-DB backup orchestrator** with support for:  
 - Multiple databases (Postgres, MySQL, MongoDB, etc.)  
 - Multiple storage providers (Local, GCS, AWS S3, Azure Blob)  
 - Secure encryption & easy restore  
