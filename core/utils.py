@@ -24,6 +24,5 @@ def get_cleaned_conf_cli(args):
         "databases": [db_config]
     }
 
-    print(clean_config)
 
     return clean_config

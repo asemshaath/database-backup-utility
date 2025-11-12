@@ -62,7 +62,6 @@ def main():
 
     if args.config:
         conf = parse_yaml_config(args.config, args.command)
-        print(conf)
     else:
         conf = get_cleaned_conf_cli(args)
         db_password = args.db_pass or os.getenv('AFTERCHIVE_DB_PASSWORD')
@@ -79,6 +78,11 @@ def main():
         backup_command(conf['databases'][0], conf['storage'][0])
         
     elif args.command == 'restore':
+
+        if not args.backup_file:
+            logger.error("--backup-file is required for restore")
+            sys.exit(1)
+
         restore_command(conf['databases'][0], conf['storage'][0], args.backup_file)
 
     else:
