@@ -62,7 +62,7 @@ class GoogleCloudStorage:
                 cred_path = config.get('credentials')
                 if not os.path.exists(cred_path):
                     raise FileNotFoundError(f"Credentials file not found at {cred_path}")
-                os.environ["AFTERCHIVE_GOOGLE_APPLICATION_CREDENTIALS"] = cred_path
+                os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = cred_path
 
             storage_client = storage.Client(project=config.get('project'))
 
