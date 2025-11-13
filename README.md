@@ -1,6 +1,6 @@
 # Afterchive - A Database Backup Orchestrator
 
-A work-in-progress **Database Backup Utility** for safe and reliable database backups.  
+A work-in-progress **Database Backup Utility Orchestrator** for safe and reliable database backups.  
 Currently, the tool is **early-stage** and requires configuration through command-line arguments.  
 
 ---
