@@ -32,15 +32,15 @@ def get_storage_strategy(storage_type: str):
                 "Install with: pip install afterchive[gcs]"
             )
     
-    elif storage_type in ["s3", "aws"]:
-        try:
-            from .s3 import S3Storage
-            return S3Storage()
-        except ImportError:
-            raise ImportError(
-                "S3 support not installed. "
-                "Install with: pip install afterchive[s3]"
-            )
+    # elif storage_type in ["s3", "aws"]:
+    #     try:
+    #         from .s3 import S3Storage
+    #         return S3Storage()
+    #     except ImportError:
+    #         raise ImportError(
+    #             "S3 support not installed. "
+    #             "Install with: pip install afterchive[s3]"
+    #         )
     
     else:
         raise ValueError(f"Unsupported storage type: {storage_type}")
