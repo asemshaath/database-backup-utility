@@ -1,13 +1,13 @@
 import argparse
-from databases import get_strategy
-from storage import get_storage_strategy
 import os
 import sys
 import yaml
 import logging
-from commands import backup_command, restore_command
-from configs import parse_yaml_config
-from utils import get_cleaned_conf_cli
+from .storage import get_storage_strategy
+from .databases import get_strategy
+from .commands import backup_command, restore_command
+from .configs import parse_yaml_config
+from .utils import get_cleaned_conf_cli
 
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 logger = logging.getLogger('afterchive')

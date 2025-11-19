@@ -1,14 +1,19 @@
 import logging
 import os
 import sys
-from storage import get_storage_strategy
-from databases import get_strategy
+from .storage import get_storage_strategy
+from .databases import get_strategy
 
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 logger = logging.getLogger('afterchive')
 
 def backup_command(db_conf, storage_conf):
-    logger.info(f"Backing up database {db_conf.get('name')} of type {db_conf.get("type")} to {storage_conf.get('type')} at path {storage_conf.get('path')}")
+    logger.info(
+        f"Backing up database {db_conf.get('name')} "
+        f"of type {db_conf.get('type')} "
+        f"to {storage_conf.get('type')} "
+        f"at path {storage_conf.get('path')}"
+    )
     
     try:
         db = get_strategy(db_conf.get('type'))
