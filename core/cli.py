@@ -86,6 +86,7 @@ def main():
         restore_command(conf['databases'][0], conf['storage'][0], args.backup_file)
 
     else:
+        logger.error("Unknown command")
         parser.print_help()
         sys.exit(1)
 
