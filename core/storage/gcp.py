@@ -1,4 +1,5 @@
 from google.cloud import storage
+from .base import StorageStrategy
 import os
 from google.api_core.exceptions import GoogleAPIError, NotFound, Forbidden
 import traceback
@@ -8,7 +9,7 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 logger = logging.getLogger('afterchive')
 
-class GoogleCloudStorage:
+class GoogleCloudStorage(StorageStrategy):
 
     def store(self, backup_path, config):
         try:
