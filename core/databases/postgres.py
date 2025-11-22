@@ -7,6 +7,7 @@ import tempfile
 import time
 import getpass
 import logging
+import re
 
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 logger = logging.getLogger('afterchive')
@@ -26,6 +27,9 @@ class PostgresBackup(BackupStrategy):
         # Prompt for password if not provided
         if not password:
             password = getpass.getpass(f"Enter password for PostgreSQL user '{user}': ")
+        
+        # Check version compatibility
+        self._check_version_compatibility(host, port, user, password, dbname)
 
         # TEST CONNECTION FIRST (before creating any files)
         logger.debug("Testing database connection...")
@@ -205,3 +209,53 @@ class PostgresBackup(BackupStrategy):
                 logger.debug(f"Cleaned up temp file: {filepath}")
             except Exception as e:
                 logger.warning(f"Failed to clean up temp file {filepath}: {e}")
+
+    def _check_version_compatibility(self, host, port, user, password, dbname):
+        """Check if pg_dump version is compatible with database version"""
+        
+        # Get pg_dump version
+        try:
+            result = subprocess.run(
+                ['pg_dump', '--version'],
+                capture_output=True,
+                text=True
+            )
+            dump_version_str = result.stdout.strip()
+            dump_match = re.search(r'pg_dump \(PostgreSQL\) (\d+)', dump_version_str)
+            if not dump_match:
+                return  # Can't parse, let pg_dump handle it
+            
+            dump_version = int(dump_match.group(1))
+        except Exception:
+            return  # Can't check, let pg_dump handle it
+        
+        # Get database version
+        try:
+            conn = self.get_db_connection(dbname, user, password, host, port)
+            cursor = conn.cursor()
+            cursor.execute("SHOW server_version;")
+            server_version_str = cursor.fetchone()[0]
+            cursor.close()
+            conn.close()
+            
+            server_match = re.search(r'^(\d+)', server_version_str)
+            if not server_match:
+                return
+            
+            server_version = int(server_match.group(1))
+        except Exception:
+            return  # Can't check, let pg_dump handle it
+        
+        # Check compatibility
+        if dump_version < server_version:
+            raise ValueError(
+                f"Version Mismatch Error\n\n"
+                f"Your pg_dump (version {dump_version}) is too old for this database (version {server_version}).\n\n"
+                f"To fix this:\n"
+                f"  1. Upgrade PostgreSQL client tools to version {server_version}+\n"
+                f"  2. See: https://github.com/asemshaath/afterchive#postgresql-version-requirements\n\n"
+                f"Installation commands:\n"
+                f"  Ubuntu/Debian: sudo apt install postgresql-client-{server_version}\n"
+                f"  macOS: brew install postgresql@{server_version}\n"
+                f"  RHEL/CentOS: sudo yum install postgresql{server_version}\n"
+            )
