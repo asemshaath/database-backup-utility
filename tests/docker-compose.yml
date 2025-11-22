@@ -1,4 +1,68 @@
 version: '3.8'
 
 services:
-    
+    postgres:
+        image: postgres:17
+        container_name: some-pg
+        environment:
+            POSTGRES_USER: testuser
+            POSTGRES_PASSWORD: 11
+            POSTGRES_DB: testdb
+        ports:
+            - "5431:5432" # Expose to host on 5431 to avoid conflicts at localhost
+        networks:
+            - afterchive-test-network
+        volumes:
+            - postgres_data:/var/lib/postgresql 
+    # User machine with afterchive
+    afterchive-host:
+        container_name: afterchive-host
+        build:
+            context: ..
+            dockerfile: tests/Dockerfile.test
+        networks:
+            - afterchive-test-network
+        volumes:
+            - ../core:/app/core
+        command: tail -f /dev/null  # Keep container running
+networks:
+  afterchive-test-network:
+
+volumes:
+    postgres_data:
+
+
+# ============================================================================
+# AI GENERATED - KEEP FOR REFERENCE
+# ============================================================================
+# services:
+#     postgres:
+#         image: postgres:13
+#         environment:
+#             POSTGRES_USER: testuser
+#             POSTGRES_PASSWORD: testpassword
+#             POSTGRES_DB: testdb
+#         ports:
+#             - "5431:5432"
+#         volumes:
+#             - postgres_data:/var/lib/postgresql/data
+#   # User machine with afterchive
+#     afterchive:
+#         build:
+#         context: ..
+#         dockerfile: Dockerfile.test
+#         depends_on:
+#         postgres:
+#             condition: service_healthy
+#         environment:
+#         - DB_PASSWORD=testpass
+#         - GOOGLE_APPLICATION_CREDENTIALS=/app/gcp-key.json
+#         volumes:
+#         - ./core:/app/core
+#         - ./test-config.yaml:/app/test-config.yaml
+#         - ./gcp-key.json:/app/gcp-key.json  # Your GCP service account key
+#         - ./test-backups:/tmp/backups
+#         command: tail -f /dev/null  # Keep container running
+
+# volumes:
+#     postgres_data:
