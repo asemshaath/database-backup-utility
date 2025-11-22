@@ -47,6 +47,12 @@ The tool needs to be tested in diffrent environments
 - [ ] Test the code for PostgreSQL to GCS in local enviroment
 - [ ] Test the running status in multiple linux enviroments
 
+---
+
+## Requirements
+#### PostgreSQL Version Requirements
+
+**IMPORTANT:** Your `pg_dump` version must be >= your database version.
 
 
 ---
