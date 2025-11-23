@@ -13,9 +13,9 @@ When I was a software engineer at Hughes, I used to write shell scripts that was
 
 ---
 
-## Roadmap
+## Roadmap for MVP
 
-### v0.1.0 (Current) ✅
+### v0.1.0 (Currently in testing) ✅
 - [x] PostgreSQL backup/restore
 - [x] GCS and Local storage
 - [x] YAML configuration
