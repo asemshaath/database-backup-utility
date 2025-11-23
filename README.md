@@ -1,12 +1,13 @@
 # Afterchive - A Database Backup Orchestrator
 
-A work-in-progress **Database Backup Utility Orchestrator** for safe and reliable database backups.  
-Currently, the tool is **early-stage** and requires configuration through command-line arguments.  
+A work-in-progress **Database Backup Utility Orchestrator** for safe and reliable database backups. 
+
+Currently, the tool is **early-stage** and many features are in development.  
 
 ---
 ## Overview
 
-When I was a software engineer at Hughes, I used to write shell scripts that was heavily backing up data. Therefore, I wanted to build this tool that will be helpful with managing databases between machine and cloud storage. The tool is open source to support other engineers.  
+When I was a software engineer at Hughes, I used to write shell scripts that was heavily backing up databases in orchestrated manner. Therefore, I wanted to build this tool that will be helpful with managing databases backups between machine and cloud storage. The tool is open source to support other engineers.  
 
 ![alt text](.media/image.png)
 
@@ -25,27 +26,19 @@ When I was a software engineer at Hughes, I used to write shell scripts that was
 - [ ] MySQL support
 - [ ] AWS S3 storage
 - [ ] Compression & checksums
-- [ ] Retention policies
 
 ### v0.3.0 (Planned)
-- [ ] MongoDB support
+- [ ] Retention policies
 - [ ] Azure Blob storage
 - [ ] Scheduling (cron / built-in job runner)
+- [ ] Notifications (Slack, Email)
 
 ### v1.0.0 (Planned)
 - [ ] Multiple backup jobs
-- [ ] Notifications (Slack, Email)
 - [ ] Encryption (GPG or AES)
 - [ ] Advanced orchestration
+- [ ] MongoDB support
 
----
-
-## Test Requirments
-
-The tool needs to be tested in diffrent environments
-
-- [ ] Test the code for PostgreSQL to GCS in local enviroment
-- [ ] Test the running status in multiple linux enviroments
 
 ---
 
@@ -57,14 +50,29 @@ The tool needs to be tested in diffrent environments
 
 ---
 
-## Usage (Current)
-
-Right now, everything runs from CLI flags. Example:
+## Installation
 
 > Please note: this is subject to change as this package is not deployed to PyPI
 
 ```bash
-python core/cli.py backup\
+#clone the repo
+git clone <repo-url>
+cd <repo-name>
+pip install -e .
+
+# to support all the availible cloud storages and databases use:
+pip install -e .[all]
+
+# to use it for only certain stuff use:
+pip install -e .[postgres,gcp]
+```
+
+## Usage
+
+With verbose CLI flags
+
+```bash
+afterchive backup\
   --db-type postgres \ # this would be to specfiy the db type (e.g. postgres or mysql)
   --db-host localhost \
   --db-port 5432 \
@@ -77,6 +85,14 @@ python core/cli.py backup\
   --project my-gcp-project # project name would mostly be optional
 ```
 
+with yaml file
+
+```bash
+afterchive backup --config <path-to-yaml.yaml>
+
+```
+see [example.yaml](example.yaml) to follow the yaml structure properly
+
 ---
 
 ## Contribution Policy
@@ -88,7 +104,7 @@ If you’re genuinely interested in contributing:
 - Please reach out directly before submitting any pull requests.  
 - You can connect with me on [LinkedIn](https://www.linkedin.com/in/asemshaath/) or contact me through another channel.  
 
-Once the project matures, I may open it up for broader community contributions.  
+Once the project matures, I will open it up for broader community contributions.  
 
 ---
 
@@ -113,4 +129,5 @@ MIT License. See `LICENSE` for details.
 ---
 
 *This project is still under active development. Expect rough edges, but contributions/feedback are welcome!*  
+
 *This project is inspired by https://roadmap.sh/projects/database-backup-utility*
