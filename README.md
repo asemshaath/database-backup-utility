@@ -54,10 +54,18 @@ When I was a software engineer at Hughes, I used to write shell scripts that was
 
 > Please note: this is subject to change as this package is not deployed to PyPI
 
-You can install it remotely
+You can install it remotely for now using:
 
 ```bash
-pipx install git+https://github.com/$GITHUB_REPOSITORY.git
+# Normal installation
+pipx install git+https://github.com/asemshaath/database-backup-utility.git
+
+# Install with PostgreSQL and GCP support
+pipx install "git+https://github.com/asemshaath/database-backup-utility.git#egg=afterchive[postgres,gcp]"
+
+# Install with all supported backends
+pipx install "git+https://github.com/asemshaath/database-backup-utility.git#egg=afterchive[all]"
+
 ```
 
 Or you can do it the hard way:
