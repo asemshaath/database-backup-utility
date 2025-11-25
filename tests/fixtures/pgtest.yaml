@@ -1,0 +1,25 @@
+backup:
+  database:
+    type: postgres
+    host: some-pg
+    port: 5432
+    user: testuser
+    name: testdb
+    password: ${DB_PASSWORD}
+
+  storage:
+    type: local
+    path: /tmp/backups/
+
+restore:
+  database:
+    type: postgres
+    host: some-pg
+    port: 5432
+    user: testuser
+    name: testdb
+    password: ${DB_PASSWORD}
+
+  storage:
+    type: local
+    path: /tmp/backups/
