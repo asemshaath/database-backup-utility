@@ -54,6 +54,14 @@ When I was a software engineer at Hughes, I used to write shell scripts that was
 
 > Please note: this is subject to change as this package is not deployed to PyPI
 
+You can install it remotely
+
+```bash
+pipx install git+https://github.com/$GITHUB_REPOSITORY.git
+```
+
+Or you can do it the hard way:
+
 ```bash
 #clone the repo
 git clone <repo-url>
