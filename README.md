@@ -58,13 +58,13 @@ When I was a software engineer at Hughes, I used to write shell scripts that was
 #clone the repo
 git clone <repo-url>
 cd <repo-name>
-pipx install -e .
+pipx install .
 
 # to support all the availible cloud storages and databases use:
-pipx install -e .[all]
+pipx install .[all]
 
-# to use it for only certain stuff use:
-pipx install -e .[postgres,gcp]
+# to use only specfic features:
+pipx install .[postgres,gcp]
 ```
 
 ## Usage
