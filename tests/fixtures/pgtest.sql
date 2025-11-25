@@ -1,10 +1,3 @@
--- Drop database if exists (for clean testing)
-DROP DATABASE IF EXISTS testdb;
-CREATE DATABASE testdb;
-
--- Connect to testdb
-\c testdb
-
 -- Create tables
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
