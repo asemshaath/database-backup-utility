@@ -105,7 +105,6 @@ with yaml file
 
 ```bash
 afterchive backup --config <path-to-yaml.yaml>
-
 ```
 see [example.yaml](example.yaml) to follow the yaml structure properly
 
