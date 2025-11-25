@@ -12,8 +12,6 @@ services:
             - "5431:5432" # Expose to host on 5431 to avoid conflicts at localhost
         networks:
             - afterchive-test-network
-        volumes:
-            - postgres_data:/var/lib/postgresql 
     # User machine with afterchive
     afterchive-host:
         container_name: afterchive-host
@@ -28,8 +26,8 @@ services:
 networks:
   afterchive-test-network:
 
-volumes:
-    postgres_data:
+# volumes:
+#     postgres_data:
 
 
 # ============================================================================
