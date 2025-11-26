@@ -17,7 +17,7 @@ restore:
     host: some-pg
     port: 5432
     user: testuser
-    name: testdb
+    name: testdb_restored_yaml
     password: ${DB_PASSWORD}
 
   storage:

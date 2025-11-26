@@ -2,13 +2,13 @@
 set -e
 
 echo "======================================"
-echo "Starting Afterchive Tests"
+echo "Postgres --> Local Test"
 echo "======================================"
 
 # Start containers
 echo "1. Starting containers..."
 
-if docker-compose up -d --build; then
+if docker-compose up -d --build --quiet > /dev/null 2>&1; then
     echo "✓ Containers started"
 else
     echo "✗ FAILED to start containers"
@@ -42,10 +42,9 @@ UNION ALL
 SELECT 'Comments: ' || COUNT(*) FROM comments;
 "
 
-# Test 1: Backup with CLI flags
 echo ""
 echo "======================================"
-echo "Test 1: Backup with CLI flags PG --> Local"
+echo "Test 1: Backup and Restore with CLI flags PG --> Local"
 echo "======================================"
 
 docker-compose exec afterchive-host afterchive backup \
@@ -80,8 +79,51 @@ if [ "$BACKUP_SIZE" -lt 100 ]; then
     exit 1
 fi
 
+echo "✓ Backup test PASSED"
+
+echo "Restoring from backup..."
+
+if docker-compose exec -T postgres psql -U testuser -d postgres -c "CREATE DATABASE testdb_restored;" > /dev/null 2>&1; then
+    echo "✓ Created restored database"
+else
+    echo "✗ FAILED to create restored database"
+    docker-compose down -v
+    exit 1
+fi
+
+docker-compose exec afterchive-host afterchive restore \
+    --db-type postgres \
+    --db-host some-pg \
+    --db-port 5432 \
+    --db-pass 11 \
+    --db-user testuser \
+    --db-name testdb_restored \
+    --storage local \
+    --path /tmp/backups/ \
+    --backup-file "$BACKUP_FILE" > /dev/null
+
+ORIGINAL_COUNT=$(docker-compose exec -T postgres psql -U testuser -d testdb -tAc "SELECT COUNT(*) FROM users;")
+RESTORED_COUNT=$(docker-compose exec -T postgres psql -U testuser -d testdb_restored -tAc "SELECT COUNT(*) FROM users;")
+
+if [ "$RESTORED_COUNT" != "$ORIGINAL_COUNT" ]; then
+    echo "✗ FAILED: Data mismatch (original: $ORIGINAL_COUNT, restored: $RESTORED_COUNT)"
+    docker-compose down -v
+    exit 1
+fi
+
+# Verify actual data matches (not just count)
+ORIGINAL_DATA=$(docker-compose exec -T postgres psql -U testuser -d testdb -tAc "SELECT username FROM users ORDER BY id;")
+RESTORED_DATA=$(docker-compose exec -T postgres psql -U testuser -d testdb_restored -tAc "SELECT username FROM users ORDER BY id;")
+
+if [ "$ORIGINAL_DATA" != "$RESTORED_DATA" ]; then
+    echo "✗ FAILED: Data content mismatch"
+    docker-compose down -v
+    exit 1
+fi
 
 echo "✓ Test 1 PASSED"
+
+
 
 echo ""
 echo "======================================="
@@ -147,10 +189,10 @@ fi
 
 echo ""
 echo "======================================"
-echo "Test5: Backup with YAML config PG --> Local"
+echo "Test5: Backup and Restore with YAML config PG --> Local"
 echo "======================================"
 
-if ! docker-compose exec -e DB_PASSWORD=11 afterchive-host afterchive backup --config tests/fixtures/pgtest.yaml > /dev/null 2>&1; then
+if ! docker-compose exec -e DB_PASSWORD=11 afterchive-host afterchive backup --config tests/fixtures/postgres-local.yaml > /dev/null 2>&1; then
     echo "✗ Test 5 FAILED: Backup command failed"
     docker-compose down -v
     exit 1
@@ -178,8 +220,45 @@ if [ "$BACKUP_SIZE" -lt 100 ]; then
     exit 1
 fi
 
+echo "✓ Backup test PASSED"
+
+echo "Restoring from backup..."
+
+if docker-compose exec -T postgres psql -U testuser -d postgres -c "CREATE DATABASE testdb_restored_yaml;" > /dev/null 2>&1; then
+    echo "✓ Created restored database"
+else
+    echo "✗ FAILED to create restored database"
+    docker-compose down -v
+    exit 1
+fi
+
+docker-compose exec -e DB_PASSWORD=11 afterchive-host afterchive restore \
+    --config tests/fixtures/postgres-local.yaml \
+    --backup-file "$BACKUP_FILE" > /dev/null 2>&1
+
+
+ORIGINAL_COUNT=$(docker-compose exec -T postgres psql -U testuser -d testdb -tAc "SELECT COUNT(*) FROM users;")
+RESTORED_COUNT=$(docker-compose exec -T postgres psql -U testuser -d testdb_restored_yaml -tAc "SELECT COUNT(*) FROM users;")
+
+if [ "$RESTORED_COUNT" != "$ORIGINAL_COUNT" ]; then
+    echo "✗ FAILED: Data mismatch (original: $ORIGINAL_COUNT, restored: $RESTORED_COUNT)"
+    docker-compose down -v
+    exit 1
+fi
+
+# Verify actual data matches (not just count)
+ORIGINAL_DATA=$(docker-compose exec -T postgres psql -U testuser -d testdb -tAc "SELECT username FROM users ORDER BY id;")
+RESTORED_DATA=$(docker-compose exec -T postgres psql -U testuser -d testdb_restored_yaml -tAc "SELECT username FROM users ORDER BY id;")
+
+if [ "$ORIGINAL_DATA" != "$RESTORED_DATA" ]; then
+    echo "✗ FAILED: Data content mismatch"
+    docker-compose down -v
+    exit 1
+fi
+
 
 echo "✓ Test 5 PASSED"
+
 
 
 echo ""
@@ -193,71 +272,4 @@ echo "Cleaning up..."
 docker-compose down -v
 
 echo "✓ Done"
-
-
-# ============= FOR FUTURE TESTS =============
-# =========================================================================================================
-
-# # Test 2: Backup with YAML config
-# echo ""
-# echo "======================================"
-# echo "Test 2: Backup with YAML config"
-# echo "======================================"
-# docker-compose exec afterchive python /app/core/cli.py backup \
-#     --config /app/test-config.yaml
-
-# echo "✓ Test 2 passed"
-
-# # List backup files
-# echo ""
-# echo "Backup files created:"
-# docker-compose exec afterchive ls -lh /tmp/backups/
-
-# # Test 3: Restore
-# echo ""
-# echo "======================================"
-# echo "Test 3: Restore to new database"
-# echo "======================================"
-
-# BACKUP_FILE=$(docker-compose exec afterchive ls /tmp/backups/ | grep testdb | head -n 1 | tr -d '\r')
-
-# echo "Restoring from: $BACKUP_FILE"
-
-# docker-compose exec afterchive python /app/core/cli.py restore \
-#     --config /app/test-config.yaml \
-#     --backup-file "$BACKUP_FILE"
-
-# echo "✓ Test 3 passed"
-
-# # Verify restored data
-# echo ""
-# echo "======================================"
-# echo "Verifying restored data..."
-# echo "======================================"
-# docker-compose exec -T postgres psql -U testuser -d testdb_restored -c "
-# SELECT 'Users: ' || COUNT(*) FROM users
-# UNION ALL
-# SELECT 'Posts: ' || COUNT(*) FROM posts
-# UNION ALL
-# SELECT 'Comments: ' || COUNT(*) FROM comments;
-# "
-
-# echo ""
-# echo "Sample data from restored database:"
-# docker-compose exec -T postgres psql -U testuser -d testdb_restored -c "SELECT * FROM users LIMIT 3;"
-
-# echo ""
-# echo "======================================"
-# echo "✓ ALL TESTS PASSED!"
-# echo "======================================"
-
-# # Cleanup
-# echo ""
-# echo "Cleaning up..."
-# docker-compose down -v
-
-# echo "✓ Done"
-# ```
-
-# ---
 
