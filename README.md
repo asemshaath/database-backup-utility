@@ -72,8 +72,8 @@ Or you can do it the hard way:
 
 ```bash
 #clone the repo
-git clone <repo-url>
-cd <repo-name>
+git clone https://github.com/asemshaath/database-backup-utility.git
+cd database-backup-utility
 pipx install .
 
 # to support all the availible cloud storages and databases use:
