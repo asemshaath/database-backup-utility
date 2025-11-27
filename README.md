@@ -60,8 +60,8 @@ You can install it remotely for now using:
 # Normal installation
 pipx install git+https://github.com/asemshaath/database-backup-utility.git
 
-# Install with PostgreSQL and GCP support
-pipx install "git+https://github.com/asemshaath/database-backup-utility.git#egg=afterchive[postgres,gcp]"
+# Install with extras (e.g. PostgreSQL and GCS support)
+pipx install "git+https://github.com/asemshaath/database-backup-utility.git#egg=afterchive[postgres,gcs]"
 
 # Install with all supported backends
 pipx install "git+https://github.com/asemshaath/database-backup-utility.git#egg=afterchive[all]"
@@ -76,12 +76,14 @@ git clone https://github.com/asemshaath/database-backup-utility.git
 cd database-backup-utility
 pipx install .
 
-# to support all the availible cloud storages and databases use:
+# to support all the availible extras such as cloud storages and databases use:
 pipx install .[all]
 
-# to use only specfic features:
-pipx install .[postgres,gcp]
+# to use only specfic extras:
+pipx install '.[postgres, gcs]'
+
 ```
+Please Note: running `pipx install .` will not support any external database or cloud storage. The user need to decide what backends they need to install by specifying the extras.
 
 ## Usage
 
