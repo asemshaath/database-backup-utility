@@ -110,6 +110,21 @@ see [example.yaml](example.yaml) to follow the yaml structure properly
 
 ---
 
+## Testing
+
+```bash
+# To run the tests clone the repo
+git clone https://github.com/asemshaath/database-backup-utility.git
+cd database-backup-utility/tests
+
+# Run all the tests
+# this shell script will run these:
+# - postgres_gcp_test.sh  
+# - postgres_local_test.sh
+
+sh test_all.sh
+```
+
 ## Contribution Policy
 
 At this stage, this project is **not open for public contributions**.  
