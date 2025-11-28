@@ -15,6 +15,8 @@ services:
     # User machine with afterchive
     afterchive-host:
         container_name: afterchive-host
+        environment:
+            - STORAGE_EMULATOR_HOST=http://afterchive-gcs:4443
         build:
             context: ..
             dockerfile: tests/Dockerfile.test
@@ -23,6 +25,16 @@ services:
         volumes:
             - ../core:/app/core
         command: tail -f /dev/null  # Keep container running
+    fake-gcs-server:
+        image: fsouza/fake-gcs-server
+        container_name: afterchive-gcs
+        ports:
+            - "4443:4443"
+        command: -scheme http -public-host afterchive-gcs:4443  # ← Correct command
+        networks:
+            - afterchive-test-network
+        
+
 networks:
   afterchive-test-network:
 
