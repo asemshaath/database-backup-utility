@@ -9,9 +9,16 @@ logger = logging.getLogger('afterchive')
 def _read_yaml(file_path):
     logger.info(f"Loading configuration from {file_path}")
     
-    with open(file_path, 'r') as file:
-        config = yaml.safe_load(file)
-        logger.debug(f"Config data: {config}")
+    try:
+        with open(file_path, 'r') as file:
+            config = yaml.safe_load(file)
+            logger.debug(f"Config data: {config}")
+    except FileNotFoundError:
+        logger.error(f"Configuration file not found: {file_path}")
+        raise
+    except yaml.YAMLError as e:
+        logger.error(f"Error parsing YAML file: {e}")
+        raise
 
     return config
 
