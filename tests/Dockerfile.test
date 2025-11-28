@@ -3,6 +3,7 @@ FROM python:3.11-slim
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     postgresql-client \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
@@ -14,7 +15,7 @@ COPY . .
 
 # Install afterchive in development mode
 # This installs it as a command
-RUN pip install -e .[postgres]
+RUN pip install -e .[all]
 
 # Keep container running
 CMD ["tail", "-f", "/dev/null"]
