@@ -34,7 +34,7 @@ run_test() {
 
 # Run all tests (each rebuilds containers)
 run_test "postgres_local_test.sh" "Postgres --> Local"
-
+run_test "postgres_gcp_test.sh" "Postgres --> GCP"
 
 # Final summary
 echo ""

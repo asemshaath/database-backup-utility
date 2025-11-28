@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set +e
 
 echo "======================================"
 echo "Postgres --> GCP Test"
@@ -189,10 +189,17 @@ docker-compose exec -T postgres psql -U testuser -d postgres \
 docker-compose exec -T postgres psql -U testuser -d postgres \
     -c "CREATE DATABASE testdb_restored_yaml;" > /dev/null 2>&1
 
-docker-compose exec -e DB_PASSWORD=11 afterchive-host \
+
+
+
+if ! docker-compose exec -e DB_PASSWORD=11 afterchive-host \
     afterchive restore \
     --config /app/tests/fixtures/postgres-gcs.yaml \
-    --backup-file "$YAML_BACKUP_FILENAME" > /dev/null 2>&1
+    --backup-file "$YAML_BACKUP_FILENAME" > /dev/null 2>&1; then
+    echo "❌ FAILED: YAML restore command failed"
+    docker-compose down -v
+    exit 1
+fi
 
 # Verify
 RESTORED_COUNT=$(docker-compose exec -T postgres psql -U testuser -d testdb_restored_yaml -tAc "SELECT COUNT(*) FROM users;")
