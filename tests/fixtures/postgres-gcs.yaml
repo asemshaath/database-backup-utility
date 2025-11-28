@@ -1,0 +1,29 @@
+backup:
+  database:
+    type: postgres
+    host: some-pg
+    port: 5432
+    user: testuser
+    name: testdb
+    password: ${DB_PASSWORD}
+
+  storage:
+    type: gcs
+    bucket: afterchive-test-bucket
+    path: yaml-tests
+    project: test-project
+
+restore:
+  database:
+    type: postgres
+    host: some-pg
+    port: 5432
+    user: testuser
+    name: testdb_restored_yaml
+    password: ${DB_PASSWORD}
+
+  storage:
+    type: gcs
+    bucket: afterchive-test-bucket
+    path: yaml-tests
+    project: test-project
