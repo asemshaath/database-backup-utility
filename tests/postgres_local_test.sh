@@ -26,7 +26,7 @@ if docker-compose exec -T postgres psql -U testuser -d testdb < fixtures/pgtest.
     echo "✓ Test database loaded"
 else
     echo "✗ FAILED to load test database"
-    docker-compose down -v
+    docker-compose down -v --rmi local
     exit 1
 fi
 
@@ -87,7 +87,7 @@ if docker-compose exec -T postgres psql -U testuser -d postgres -c "CREATE DATAB
     echo "✓ Created restored database"
 else
     echo "✗ FAILED to create restored database"
-    docker-compose down -v
+    docker-compose down -v --rmi local
     exit 1
 fi
 
@@ -107,7 +107,7 @@ RESTORED_COUNT=$(docker-compose exec -T postgres psql -U testuser -d testdb_rest
 
 if [ "$RESTORED_COUNT" != "$ORIGINAL_COUNT" ]; then
     echo "✗ FAILED: Data mismatch (original: $ORIGINAL_COUNT, restored: $RESTORED_COUNT)"
-    docker-compose down -v
+    docker-compose down -v --rmi local
     exit 1
 fi
 
@@ -117,7 +117,7 @@ RESTORED_DATA=$(docker-compose exec -T postgres psql -U testuser -d testdb_resto
 
 if [ "$ORIGINAL_DATA" != "$RESTORED_DATA" ]; then
     echo "✗ FAILED: Data content mismatch"
-    docker-compose down -v
+    docker-compose down -v --rmi local
     exit 1
 fi
 
@@ -142,7 +142,7 @@ if docker-compose exec afterchive-host afterchive backup \
     echo "✓ Test 2 PASSED (correctly rejected wrong password)"
 else
     echo "✗ FAILED (should have rejected wrong password)"
-    docker-compose down -v
+    docker-compose down -v --rmi local
     exit 1
 fi
 
@@ -163,7 +163,7 @@ if docker-compose exec afterchive-host afterchive backup \
     echo "✓ Test 3 PASSED (correctly handled unreachable host)"
 else
     echo "✗ FAILED (should have handled unreachable host)"
-    docker-compose down -v
+    docker-compose down -v --rmi local
     exit 1
 fi
 
@@ -183,7 +183,7 @@ if docker-compose exec afterchive-host afterchive backup \
     echo "✓ Test 4 PASSED (correctly handled missing argument)"
 else
     echo "✗ FAILED (should have handled missing argument)"
-    docker-compose down -v
+    docker-compose down -v --rmi local
     exit 1
 fi
 
@@ -194,7 +194,7 @@ echo "======================================"
 
 if ! docker-compose exec -e DB_PASSWORD=11 afterchive-host afterchive backup --config tests/fixtures/postgres-local.yaml > /dev/null 2>&1; then
     echo "✗ Test 5 FAILED: Backup command failed"
-    docker-compose down -v
+    docker-compose down -v --rmi local
     exit 1
 fi
 
@@ -228,7 +228,7 @@ if docker-compose exec -T postgres psql -U testuser -d postgres -c "CREATE DATAB
     echo "✓ Created restored database"
 else
     echo "✗ FAILED to create restored database"
-    docker-compose down -v
+    docker-compose down -v --rmi local
     exit 1
 fi
 
@@ -242,7 +242,7 @@ RESTORED_COUNT=$(docker-compose exec -T postgres psql -U testuser -d testdb_rest
 
 if [ "$RESTORED_COUNT" != "$ORIGINAL_COUNT" ]; then
     echo "✗ FAILED: Data mismatch (original: $ORIGINAL_COUNT, restored: $RESTORED_COUNT)"
-    docker-compose down -v
+    docker-compose down -v --rmi local
     exit 1
 fi
 
@@ -252,7 +252,7 @@ RESTORED_DATA=$(docker-compose exec -T postgres psql -U testuser -d testdb_resto
 
 if [ "$ORIGINAL_DATA" != "$RESTORED_DATA" ]; then
     echo "✗ FAILED: Data content mismatch"
-    docker-compose down -v
+    docker-compose down -v --rmi local
     exit 1
 fi
 
@@ -269,7 +269,7 @@ echo "======================================"
 # Cleanup
 echo ""
 echo "Cleaning up..."
-docker-compose down -v
+docker-compose down -v --rmi local
 
 echo "✓ Done"
 

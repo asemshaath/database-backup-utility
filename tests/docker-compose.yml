@@ -17,6 +17,7 @@ services:
         container_name: afterchive-host
         environment:
             - STORAGE_EMULATOR_HOST=http://afterchive-gcs:4443
+            - PYTHONDONTWRITEBYTECODE=1
         build:
             context: ..
             dockerfile: tests/Dockerfile.test

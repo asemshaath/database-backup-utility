@@ -26,7 +26,7 @@ if docker-compose exec -T postgres psql -U testuser -d testdb < fixtures/pgtest.
     echo "✓ Test database loaded"
 else
     echo "✗ FAILED to load test database"
-    docker-compose down -v
+    docker-compose down -v --rmi local
     exit 1
 fi
 
@@ -58,7 +58,7 @@ curl -s http://afterchive-gcs:4443/storage/v1/b/afterchive-test-bucket
 
 if [ "$BUCKET_CHECK" -eq "0" ]; then
     echo "✗ FAILED: Could not create fake GCS bucket"
-    docker-compose down -v
+    docker-compose down -v --rmi local
     exit 1
 fi
 
@@ -90,7 +90,7 @@ curl -s http://afterchive-gcs:4443/storage/v1/b/afterchive-test-bucket/o
 if ! echo "$GCS_RESPONSE" | grep -q "testdb"; then
     echo "✗ FAILED: No backup file in GCS"
     echo "GCS Response: $GCS_RESPONSE"
-    docker-compose down -v
+    docker-compose down -v --rmi local
     exit 1
 fi
 
@@ -106,7 +106,7 @@ if 'items' in data and len(data['items']) > 0:
 
 if [ -z "$BACKUP_FILE" ]; then
     echo "✗ FAILED: Could not extract backup filename"
-    docker-compose down -v
+    docker-compose down -v --rmi local
     exit 1
 fi
 
@@ -138,7 +138,7 @@ RESTORED_COUNT=$(docker-compose exec -T postgres psql -U testuser -d testdb_rest
 
 if [ "$RESTORED_COUNT" != "$ORIGINAL_COUNT" ]; then
     echo "✗ FAILED: Data count mismatch (original: $ORIGINAL_COUNT, restored: $RESTORED_COUNT)"
-    docker-compose down -v
+    docker-compose down -v --rmi local
     exit 1
 fi
 
@@ -147,7 +147,7 @@ RESTORED_DATA=$(docker-compose exec -T postgres psql -U testuser -d testdb_resto
 
 if [ "$ORIGINAL_DATA" != "$RESTORED_DATA" ]; then
     echo "✗ FAILED: Data content mismatch"
-    docker-compose down -v
+    docker-compose down -v --rmi local
     exit 1
 fi
 
@@ -197,7 +197,7 @@ if ! docker-compose exec -e DB_PASSWORD=11 afterchive-host \
     --config /app/tests/fixtures/postgres-gcs.yaml \
     --backup-file "$YAML_BACKUP_FILENAME" > /dev/null 2>&1; then
     echo "❌ FAILED: YAML restore command failed"
-    docker-compose down -v
+    docker-compose down -v --rmi local
     exit 1
 fi
 
@@ -206,7 +206,7 @@ RESTORED_COUNT=$(docker-compose exec -T postgres psql -U testuser -d testdb_rest
 
 if [ "$RESTORED_COUNT" != "$ORIGINAL_COUNT" ]; then
     echo "✗ FAILED: YAML restore data mismatch"
-    docker-compose down -v
+    docker-compose down -v --rmi local
     exit 1
 fi
 
@@ -215,7 +215,7 @@ RESTORED_DATA=$(docker-compose exec -T postgres psql -U testuser -d testdb_resto
 
 if [ "$ORIGINAL_DATA" != "$RESTORED_DATA" ]; then
     echo "✗ FAILED: YAML data content mismatch"
-    docker-compose down -v
+    docker-compose down -v --rmi local
     exit 1
 fi
 
@@ -232,7 +232,7 @@ echo "======================================"
 # Cleanup
 echo ""
 echo "Cleaning up..."
-docker-compose down -v
+docker-compose down -v --rmi local
 
 echo "✓ Done"
 
