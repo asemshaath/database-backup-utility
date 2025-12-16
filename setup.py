@@ -3,9 +3,14 @@ from setuptools import setup, find_packages
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
+# Read version from _version.py without importing the package
+version_info = {}
+with open("core/_version.py", "r", encoding="utf-8") as fh:
+    exec(fh.read(), version_info)
+
 setup(
     name="afterchive",
-    version="0.1.0",
+    version=version_info["__version__"],
     author="Asem Shaath",
     author_email="shaathasem@gmail.com",
     description="Multi-database, multi-cloud backup utility",
